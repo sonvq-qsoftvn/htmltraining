@@ -23,86 +23,100 @@
 				<h4>Gender</h4>
                 <input onblur="updateStorage(this.value, this.id)" type="text" name="gender" id="gender" />
 			</div>
-            
+			
+            <div class="spacer" style="clear: both;"></div>
+			<h2>Save data to SessionStorage</h2>
+
+			
             <div class="two-column">
-				<h4>Street</h4>
-                <input onblur="updateStorage(this.value, this.id)" type="text" name="street" id="street" /><br/><br/>
-                <input onclick="clearStorage()" type="button" name="clear" id="clear" value="Clear LocalStorage"/>
+				<h4>Money</h4>
+                <input onblur="updateStorage(this.value, this.id)" type="text" name="money" id="money" /><br/><br/>
 			</div>
             
             <div class="two-column">
-				<h4>Building</h4>
-                <input onblur="updateStorage(this.value, this.id)" type="text" name="building" id="building" />
+				<h4>Credit Card Number</h4>
+                <input onblur="updateStorage(this.value, this.id)" type="text" name="creditnumber" id="creditnumber" />
 			</div>
             
-                
-						
+			<div class="spacer" style="clear: both;"></div>
+			<h2>Clear all data of OfflineStorage</h2>
+			
+			<div class="two-column">
+				<button type="button" name="clear" id="clear">Clear OfflineStorage</button>
+			</div>		
+		
             <div class="main" role="main">
                 <section id="main-content">
                     <h3>Code used in this page</h3>
                     <pre class="brush: js">
 window.addEventListener('load', function () {
-    // Check browser support
-    if (typeof(Storage) != "undefined") {
+	// Check browser support
+	if (typeof(Storage) != "undefined") {     
+		// Retrieve
+		var userLocalObject = JSON.parse(localStorage.getItem("userLocalObject"));
+		var userSessionObject = JSON.parse(sessionStorage.getItem("userSessionObject"));
+		
+		if (typeof(localStorage.getItem("userLocalObject")) === "undefined" 
+			|| localStorage.getItem("userLocalObject") === null) {
+			userLocalObject = {name: "", gender: ""}
+		}
 
-        var address = {street : "Tran Thai Tong", building : "Qsoft"}
-        var testObject = {name : "sonvq", gender : "male", address : address}
+		if (typeof(sessionStorage.getItem("userSessionObject")) === "undefined" 
+			|| sessionStorage.getItem("userSessionObject") === null) {
+			userSessionObject = {money: "", creditnumber: ""}
+		}
+		
+		document.getElementById("name").value = userLocalObject.name;
+		document.getElementById("gender").value = userLocalObject.gender;
 
-        if (typeof(localStorage.getItem("userObject")) === "undefined" || localStorage.getItem("userObject") == null) {
-            // Store
-            localStorage.setItem("userObject", JSON.stringify(testObject));
-        }
+		document.getElementById("money").value = userSessionObject.money;
+		document.getElementById("creditnumber").value = userSessionObject.creditnumber;
+					
 
-        var address = ["Tran Thai Tong", "Qsoft"];
-        var testArray = ["sonvq", "male", address];
+		updateStorage = function(value, id) {
+			switch(id) {
+				case "name":
+					userLocalObject.name = value;
+					break;
+				case "gender":
+					console.log(userLocalObject);
+					userLocalObject.gender = value;
+					break;
+				case "money":
+					userSessionObject.money = value;
+					break;
+				case "creditnumber":
+					userSessionObject.creditnumber = value;
+					break;
+			}
+			
+			switch(id) {
+				case "name":
+				case "gender":
+					localStorage.setItem("userLocalObject", JSON.stringify(userLocalObject));
+					break;
+				case "money":
+				case "creditnumber":
+					sessionStorage.setItem("userSessionObject", JSON.stringify(userSessionObject));
+					break;
+			}
+			
+		};
+		
+		function clearStorage () {
+			localStorage.clear();
+			sessionStorage.clear();
+			var inputs, index;
 
-        // Store
-        localStorage.setItem("userArray", JSON.stringify(testArray));
-
-        // Retrieve
-        console.log(localStorage.getItem("userObject"));
-        // Retrieve
-        console.log(localStorage.getItem("userArray")); 
-
-        // Retrieve
-        var userObject = JSON.parse(localStorage.getItem("userObject"));
-        console.log(userObject);
-        // Retrieve
-
-        var userArray = JSON.parse(localStorage.getItem("userArray"));
-        console.log(userArray); 						
-
-
-        document.getElementById("name").value = userObject.name;
-        document.getElementById("gender").value = userObject.gender;
-        document.getElementById("street").value = userObject.address.street;
-        document.getElementById("building").value = userObject.address.building;
-
-        updateStorage = function(value, id) {
-            switch(id) {
-                case "name":
-                    userObject.name = value;
-                    break;
-                case "gender":
-                    userObject.gender = value;
-                    break;
-                case "street":
-                    userObject.address.street = value;
-                    break;
-                case "building":
-                    userObject.address.building = value;
-                    break;
-            }
-            localStorage.setItem("userObject", JSON.stringify(userObject));
-        };
-
-        clearStorage = function() {
-            localStorage.clear();
-        };
-
-    } else {
-        document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
-    }
+			inputs = document.getElementsByTagName('input');
+			for (index = 0; index < inputs.length; ++index) {
+				inputs[index].value="";
+			}
+		};
+		document.getElementById("clear").addEventListener ("click", clearStorage, false);
+	} else {
+		document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+	}
 }, false);
                     </pre>
                 </section>
@@ -111,63 +125,67 @@ window.addEventListener('load', function () {
             <script>
 				window.addEventListener('load', function () {
 					// Check browser support
-					if (typeof(Storage) != "undefined") {
-						                     
-						var address = {street : "Tran Thai Tong", building : "Qsoft"}
-						var testObject = {name : "sonvq", gender : "male", address : address}
-						
-                        if (typeof(localStorage.getItem("userObject")) === "undefined" || localStorage.getItem("userObject") == null) {
-                            // Store
-                            localStorage.setItem("userObject", JSON.stringify(testObject));
-                        }
-						
-						var address = ["Tran Thai Tong", "Qsoft"];
-						var testArray = ["sonvq", "male", address];
-						
-						// Store
-						localStorage.setItem("userArray", JSON.stringify(testArray));
-									
+					if (typeof(Storage) != "undefined") {     
 						// Retrieve
-						console.log(localStorage.getItem("userObject"));
-						// Retrieve
-						console.log(localStorage.getItem("userArray")); 
-						
-						// Retrieve
-                        var userObject = JSON.parse(localStorage.getItem("userObject"));
-						console.log(userObject);
-						// Retrieve
+                        var userLocalObject = JSON.parse(localStorage.getItem("userLocalObject"));
+						var userSessionObject = JSON.parse(sessionStorage.getItem("userSessionObject"));
                         
-                        var userArray = JSON.parse(localStorage.getItem("userArray"));
-						console.log(userArray); 						
-                        
+						if (typeof(localStorage.getItem("userLocalObject")) === "undefined" || localStorage.getItem("userLocalObject") === null) {
+							userLocalObject = {name: "", gender: ""}
+						}
 
-                        document.getElementById("name").value = userObject.name;
-                        document.getElementById("gender").value = userObject.gender;
-                        document.getElementById("street").value = userObject.address.street;
-                        document.getElementById("building").value = userObject.address.building;
+						if (typeof(sessionStorage.getItem("userSessionObject")) === "undefined" || sessionStorage.getItem("userSessionObject") === null) {
+							userSessionObject = {money: "", creditnumber: ""}
+						}
+						
+						document.getElementById("name").value = userLocalObject.name;
+						document.getElementById("gender").value = userLocalObject.gender;
+
+						document.getElementById("money").value = userSessionObject.money;
+						document.getElementById("creditnumber").value = userSessionObject.creditnumber;
+									
 
                         updateStorage = function(value, id) {
                             switch(id) {
                                 case "name":
-                                    userObject.name = value;
+                                    userLocalObject.name = value;
                                     break;
                                 case "gender":
-                                    userObject.gender = value;
+									console.log(userLocalObject);
+                                    userLocalObject.gender = value;
                                     break;
-                                case "street":
-                                    userObject.address.street = value;
+                                case "money":
+                                    userSessionObject.money = value;
                                     break;
-                                case "building":
-                                    userObject.address.building = value;
+                                case "creditnumber":
+                                    userSessionObject.creditnumber = value;
                                     break;
                             }
-                            localStorage.setItem("userObject", JSON.stringify(userObject));
+							
+							switch(id) {
+								case "name":
+								case "gender":
+									localStorage.setItem("userLocalObject", JSON.stringify(userLocalObject));
+									break;
+								case "money":
+								case "creditnumber":
+									sessionStorage.setItem("userSessionObject", JSON.stringify(userSessionObject));
+									break;
+							}
+                            
                         };
                         
-                        clearStorage = function() {
+                        function clearStorage () {
                             localStorage.clear();
+							sessionStorage.clear();
+							var inputs, index;
+
+							inputs = document.getElementsByTagName('input');
+							for (index = 0; index < inputs.length; ++index) {
+								inputs[index].value="";
+							}
                         };
-                        
+						document.getElementById("clear").addEventListener ("click", clearStorage, false);
 					} else {
 						document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
 					}

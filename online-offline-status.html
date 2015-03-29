@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="offline-language-english.css">
+        <link rel="stylesheet" href="offline-language-english-indicator.css">
+        <link rel="stylesheet" href="offline-theme-dark.css">
+        <link rel="stylesheet" href="offline-theme-dark-indicator.css">
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+    <body>
+        <div id="container">
+            <header role="banner">
+                <h1>Check Online/Offline Status example - Team 5 - Offline Storage</h1>
+                <h2>Display online/offline status by window.addEventListener</h2>
+            </header>
+			
+			<img id="img-listener" src="yahoo-on.png" />
+			<img class="img-listener" src="yahoo-off.png" style="display:none"/>
+			
+			<div class="spacer" style="clear: both;"></div>
+			<h2>Display online/offline status by navigator.onLine</h2>
+			
+			<img id="img-navigator" src="skype-on.png" />
+			<img class="img-navigator" src="skype-off.png" style="display:none"/>
+			
+            <div role="main">
+                <section id="main-content">
+
+                    <h3>Code used in this page</h3>
+                    <pre class="brush: js">
+(function () {
+	var imgListener = document.getElementById("img-listener"),
+		imgNavigator = document.getElementById("img-navigator"),
+		isOnline = function () {
+			imgListener.src = "yahoo-on.png";
+		},
+		isOffline = function () {
+			imgListener.src = "yahoo-off.png";
+		};
+
+		window.addEventListener("online", isOnline, false);
+		window.addEventListener("offline", isOffline, false);
+		
+		setInterval(
+			function(){ 
+				if (navigator.onLine) { 
+					imgNavigator.src = "skype-on.png"; 
+				} else { 
+					imgNavigator.src = "skype-off.png"; 
+				}
+			}, 500);
+		
+		
+})();
+                    </pre>
+                </section>
+            </div>
+
+            <style>
+                .offline-ui {
+                    margin-top: 30px;
+                    -webkit-border-radius: 5px;
+                    -moz-border-radius: 5px;
+                    border-radius: 5px;
+                    height: 50px;
+                    min-width: 550px;
+                }
+                .offline-ui .offline-ui-content {
+                    padding-left: 2.5em;
+                    line-height: 27px;
+                    font-size: 17px;
+                }
+            </style>
+            <script>
+                (function () {
+					var imgListener = document.getElementById("img-listener"),
+						imgNavigator = document.getElementById("img-navigator"),
+						isOnline = function () {
+							imgListener.src = "yahoo-on.png";
+						},
+						isOffline = function () {
+							imgListener.src = "yahoo-off.png";
+						};
+
+						window.addEventListener("online", isOnline, false);
+						window.addEventListener("offline", isOffline, false);
+						
+						setInterval(
+							function(){ 
+								if (navigator.onLine) { 
+									imgNavigator.src = "skype-on.png"; 
+								} else { 
+									imgNavigator.src = "skype-off.png"; 
+								}
+							}, 500);
+						
+						
+				})();
+            </script>
+			
+			<!-- Syntax highlighting -->
+			<script type="text/javascript" src="syntax-highlighter/scripts/shHTMLJavaScript.js"></script>
+			<script type="text/javascript">
+				SyntaxHighlighter.all();
+			</script>
+        </div>
+    </body>
+</html>
