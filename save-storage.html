@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="offline-language-english.css">
+        <link rel="stylesheet" href="offline-language-english-indicator.css">
+        <link rel="stylesheet" href="offline-theme-dark.css">
+        <link rel="stylesheet" href="offline-theme-dark-indicator.css">
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+    <body>
+        <div id="container">
+            <header role="banner">
+                <h1>Save data to LocalStorage & SessionStorage - Team 5 - Offline Storage</h1>
+                <h2>Save data to LocalStorage</h2>
+            </header>
+
+			<div class="two-column">
+				<h4>Name</h4>
+				<input onblur="updateStorage(this.value, this.id)" type="text" name="name" id="name" />
+			</div>
+            
+            <div class="two-column">
+				<h4>Gender</h4>
+                <input onblur="updateStorage(this.value, this.id)" type="text" name="gender" id="gender" />
+			</div>
+            
+            <div class="two-column">
+				<h4>Street</h4>
+                <input onblur="updateStorage(this.value, this.id)" type="text" name="street" id="street" /><br/><br/>
+                <input onclick="clearStorage()" type="button" name="clear" id="clear" value="Clear LocalStorage"/>
+			</div>
+            
+            <div class="two-column">
+				<h4>Building</h4>
+                <input onblur="updateStorage(this.value, this.id)" type="text" name="building" id="building" />
+			</div>
+            
+                
+						
+            <div class="main" role="main">
+                <section id="main-content">
+                    <h3>Code used in this page</h3>
+                    <pre class="brush: js">
+window.addEventListener('load', function () {
+    // Check browser support
+    if (typeof(Storage) != "undefined") {
+
+        var address = {street : "Tran Thai Tong", building : "Qsoft"}
+        var testObject = {name : "sonvq", gender : "male", address : address}
+
+        if (typeof(localStorage.getItem("userObject")) === "undefined" || localStorage.getItem("userObject") == null) {
+            // Store
+            localStorage.setItem("userObject", JSON.stringify(testObject));
+        }
+
+        var address = ["Tran Thai Tong", "Qsoft"];
+        var testArray = ["sonvq", "male", address];
+
+        // Store
+        localStorage.setItem("userArray", JSON.stringify(testArray));
+
+        // Retrieve
+        console.log(localStorage.getItem("userObject"));
+        // Retrieve
+        console.log(localStorage.getItem("userArray")); 
+
+        // Retrieve
+        var userObject = JSON.parse(localStorage.getItem("userObject"));
+        console.log(userObject);
+        // Retrieve
+
+        var userArray = JSON.parse(localStorage.getItem("userArray"));
+        console.log(userArray); 						
+
+
+        document.getElementById("name").value = userObject.name;
+        document.getElementById("gender").value = userObject.gender;
+        document.getElementById("street").value = userObject.address.street;
+        document.getElementById("building").value = userObject.address.building;
+
+        updateStorage = function(value, id) {
+            switch(id) {
+                case "name":
+                    userObject.name = value;
+                    break;
+                case "gender":
+                    userObject.gender = value;
+                    break;
+                case "street":
+                    userObject.address.street = value;
+                    break;
+                case "building":
+                    userObject.address.building = value;
+                    break;
+            }
+            localStorage.setItem("userObject", JSON.stringify(userObject));
+        };
+
+        clearStorage = function() {
+            localStorage.clear();
+        };
+
+    } else {
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+    }
+}, false);
+                    </pre>
+                </section>
+            </div>
+
+            <script>
+				window.addEventListener('load', function () {
+					// Check browser support
+					if (typeof(Storage) != "undefined") {
+						                     
+						var address = {street : "Tran Thai Tong", building : "Qsoft"}
+						var testObject = {name : "sonvq", gender : "male", address : address}
+						
+                        if (typeof(localStorage.getItem("userObject")) === "undefined" || localStorage.getItem("userObject") == null) {
+                            // Store
+                            localStorage.setItem("userObject", JSON.stringify(testObject));
+                        }
+						
+						var address = ["Tran Thai Tong", "Qsoft"];
+						var testArray = ["sonvq", "male", address];
+						
+						// Store
+						localStorage.setItem("userArray", JSON.stringify(testArray));
+									
+						// Retrieve
+						console.log(localStorage.getItem("userObject"));
+						// Retrieve
+						console.log(localStorage.getItem("userArray")); 
+						
+						// Retrieve
+                        var userObject = JSON.parse(localStorage.getItem("userObject"));
+						console.log(userObject);
+						// Retrieve
+                        
+                        var userArray = JSON.parse(localStorage.getItem("userArray"));
+						console.log(userArray); 						
+                        
+
+                        document.getElementById("name").value = userObject.name;
+                        document.getElementById("gender").value = userObject.gender;
+                        document.getElementById("street").value = userObject.address.street;
+                        document.getElementById("building").value = userObject.address.building;
+
+                        updateStorage = function(value, id) {
+                            switch(id) {
+                                case "name":
+                                    userObject.name = value;
+                                    break;
+                                case "gender":
+                                    userObject.gender = value;
+                                    break;
+                                case "street":
+                                    userObject.address.street = value;
+                                    break;
+                                case "building":
+                                    userObject.address.building = value;
+                                    break;
+                            }
+                            localStorage.setItem("userObject", JSON.stringify(userObject));
+                        };
+                        
+                        clearStorage = function() {
+                            localStorage.clear();
+                        };
+                        
+					} else {
+						document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+					}
+				}, false);
+            </script>
+			
+			<!-- Syntax highlighting -->
+			<script type="text/javascript" src="syntax-highlighter/scripts/shHTMLJavaScript.js"></script>
+			<script type="text/javascript">
+				SyntaxHighlighter.all();
+			</script>
+        </div>
+    </body>
+</html>

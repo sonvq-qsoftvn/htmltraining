@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="offline-language-english.css">
+        <link rel="stylesheet" href="offline-language-english-indicator.css">
+        <link rel="stylesheet" href="offline-theme-dark.css">
+        <link rel="stylesheet" href="offline-theme-dark-indicator.css">
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+    <body>
+        <div id="container">
+            <header role="banner">
+                <h1>Check Online/Offline Status example - Team 5 - Offline Storage</h1>
+                <h2>Offline.js VS Heyoffline.js</h2>
+            </header>
+
+            <div role="main">
+                <section id="main-content">
+
+                    <h3>Code used in this page</h3>
+                    <pre class="brush: js">
+window.addEventListener('load', function () {
+    new Heyoffline();
+
+    Offline.options = {
+        checkOnLoad: false,
+        interceptRequests: true,
+        reconnect: {
+            initialDelay: 3,
+            delay: 5
+        },
+        requests: true
+    }
+}, false);
+                    </pre>
+                </section>
+            </div>
+            <script src="offline.min.js"></script>
+            <script src="heyoffline.js"></script>
+
+            <style>
+                .offline-ui {
+                    margin-top: 30px;
+                    -webkit-border-radius: 5px;
+                    -moz-border-radius: 5px;
+                    border-radius: 5px;
+                    height: 50px;
+                    min-width: 550px;
+                }
+                .offline-ui .offline-ui-content {
+                    padding-left: 2.5em;
+                    line-height: 27px;
+                    font-size: 17px;
+                }
+            </style>
+            <script>
+                window.addEventListener('load', function () {
+                    new Heyoffline();
+
+                    Offline.options = {
+                        checkOnLoad: false,
+                        interceptRequests: true,
+                        reconnect: {
+                            initialDelay: 3,
+                            delay: 5
+                        },
+                        requests: true
+                    }
+                }, false);
+            </script>
+			
+			<!-- Syntax highlighting -->
+			<script type="text/javascript" src="syntax-highlighter/scripts/shHTMLJavaScript.js"></script>
+			<script type="text/javascript">
+				SyntaxHighlighter.all();
+			</script>
+        </div>
+    </body>
+</html>
