@@ -1,3 +1,9 @@
 http://localstorage-use-not-abuse.appspot.com/
 
 http://www.smashingmagazine.com/2010/10/11/local-storage-and-how-to-use-it/
+
+http://24ways.org/2010/html5-local-storage/
+
+http://dev-test.nemikor.com/web-storage/support-test/
+
+http://stackoverflow.com/questions/13567509/what-happens-when-localstorage-is-full
