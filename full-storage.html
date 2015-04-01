@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="offline-language-english.css">
+        <link rel="stylesheet" href="offline-language-english-indicator.css">
+        <link rel="stylesheet" href="offline-theme-dark.css">
+        <link rel="stylesheet" href="offline-theme-dark-indicator.css">
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+    <body>
+        <div id="container">
+            <header role="banner">
+                <h1>LocalStorage & SessionStorage capacity - Team 5 - Offline Storage</h1>
+                <h2>Test LocalStorage capacity</h2>
+            </header>
+			<div id="result"></div>
+			<div class="progress">
+				<div class="progress-bar progress-bar-striped active" id="local-storage-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10240" style="width:0%">
+				  0%
+				</div>
+			</div>
+			<h3 id="result-localstorage"></h3>
+			<button type="button" name="local-start" id="local-start">Start test LocalStorage</button>
+			<button type="button" name="clear" id="clear">Clear Storage</button>
+            <div class="main" role="main">
+                <section id="main-content">
+                    <h3>Code used in this page</h3>
+                    <pre class="brush: js">
+window.addEventListener('load', function () {
+	// Check browser support
+	if (typeof(Storage) != "undefined") {  				
+		var packet = new Array( 1025 ).join( "a" ); // 1 k
+		var maxPackets = 1024 * 10; // 10 M
+		
+		$('#local-storage-bar').css('width', (localStorage.length/10240)*100+'%').attr('aria-valuenow', localStorage.length); 
+		$('#local-storage-bar').html(((localStorage.length/10240)*100).toFixed(2)+'%');
+		$('#result-localstorage').html (localStorage.length + 'k characters inserted to LocalStorage');		
+		function startTestLocalStorage () {
+			try {
+				for (var countIndex = 0; countIndex <= maxPackets; countIndex++) {
+					localStorage.setItem( countIndex, packet );
+					$('#local-storage-bar').css('width', (countIndex/10240)*100+'%').attr('aria-valuenow', countIndex); 
+					$('#local-storage-bar').html(((countIndex/10240)*100).toFixed(2)+'%');
+					$('#result-localstorage').html (countIndex + 'k characters inserted to LocalStorage');
+				}				
+				
+			} catch ( e ) {
+				console.log(e.message);
+			}
+		};
+		document.getElementById("local-start").addEventListener ("click", startTestLocalStorage, false);
+		
+		function clearStorage () {
+			localStorage.clear();
+			sessionStorage.clear();
+			$('#local-storage-bar').css('width', 0+'%').attr('aria-valuenow', 0); 
+			$('#local-storage-bar').html(0+'%');
+			$('#result-localstorage').html (localStorage.length + 'k characters inserted to LocalStorage');
+		};
+		document.getElementById("clear").addEventListener ("click", clearStorage, false);
+	} else {
+		document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+	}
+
+}, false);
+                    </pre>
+                </section>
+            </div>
+
+            <script>
+				window.addEventListener('load', function () {
+					// Check browser support
+					if (typeof(Storage) != "undefined") {  				
+						var packet = new Array( 1025 ).join( "a" ); // 1 k
+						var maxPackets = 1024 * 10; // 10 M
+						
+						$('#local-storage-bar').css('width', (localStorage.length/10240)*100+'%').attr('aria-valuenow', localStorage.length); 
+						$('#local-storage-bar').html(((localStorage.length/10240)*100).toFixed(2)+'%');
+						$('#result-localstorage').html (localStorage.length + 'k characters inserted to LocalStorage');		
+						function startTestLocalStorage () {
+                            try {
+								for (var countIndex = 0; countIndex <= maxPackets; countIndex++) {
+									localStorage.setItem( countIndex, packet );
+									$('#local-storage-bar').css('width', (countIndex/10240)*100+'%').attr('aria-valuenow', countIndex); 
+									$('#local-storage-bar').html(((countIndex/10240)*100).toFixed(2)+'%');
+									$('#result-localstorage').html (countIndex + 'k characters inserted to LocalStorage');
+								}				
+								
+							} catch ( e ) {
+								console.log(e.message);
+							}
+                        };
+						document.getElementById("local-start").addEventListener ("click", startTestLocalStorage, false);
+						
+						function clearStorage () {
+                            localStorage.clear();
+							sessionStorage.clear();
+							$('#local-storage-bar').css('width', 0+'%').attr('aria-valuenow', 0); 
+							$('#local-storage-bar').html(0+'%');
+							$('#result-localstorage').html (localStorage.length + 'k characters inserted to LocalStorage');
+                        };
+						document.getElementById("clear").addEventListener ("click", clearStorage, false);
+					} else {
+						document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+					}
+
+				}, false);
+            </script>
+			
+			<!-- Syntax highlighting -->
+			<script type="text/javascript" src="syntax-highlighter/scripts/shHTMLJavaScript.js"></script>
+			<script type="text/javascript">
+				SyntaxHighlighter.all();
+			</script>
+        </div>
+    </body>
+</html>
