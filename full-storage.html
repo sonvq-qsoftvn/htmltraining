@@ -25,15 +25,33 @@
 			</div>
 			<h3 id="result-localstorage"></h3>
 			<button type="button" name="local-start" id="local-start">Start test LocalStorage</button>
+			
+			
+			<h2>Test SessionStorage capacity</h2>
+			<div class="progress">
+				<div class="progress-bar progress-bar-striped active" id="session-storage-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10240" style="width:0%">
+				  0%
+				</div>
+			</div>
+			<h3 id="result-sessionstorage"></h3>
+			<button type="button" name="local-start" id="local-start">Start test SessionStorage</button>
+
+			<h2>Clear Storage</h2>
 			<button type="button" name="clear" id="clear">Clear Storage</button>
+			
             <div class="main" role="main">
                 <section id="main-content">
                     <h3>Code used in this page</h3>
                     <pre class="brush: js">
 window.addEventListener('load', function () {
 	// Check browser support
-	if (typeof(Storage) != "undefined") {  				
-		var packet = new Array( 1025 ).join( "a" ); // 1 k
+	if (typeof(Storage) != "undefined") {  	
+		var packet = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for( var i=0; i <= 1023; i++ )
+			packet += possible.charAt(Math.floor(Math.random() * possible.length)); // 1k
+	
 		var maxPackets = 1024 * 10; // 10 M
 		
 		$('#local-storage-bar').css('width', (localStorage.length/10240)*100+'%').attr('aria-valuenow', localStorage.length); 
@@ -74,13 +92,20 @@ window.addEventListener('load', function () {
             <script>
 				window.addEventListener('load', function () {
 					// Check browser support
-					if (typeof(Storage) != "undefined") {  				
-						var packet = new Array( 1025 ).join( "a" ); // 1 k
+					if (typeof(Storage) != "undefined") {  	
+						var packet = "";
+						var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+						for( var i=0; i <= 1023; i++ )
+							packet += possible.charAt(Math.floor(Math.random() * possible.length)); // 1k
+					
 						var maxPackets = 1024 * 10; // 10 M
 						
 						$('#local-storage-bar').css('width', (localStorage.length/10240)*100+'%').attr('aria-valuenow', localStorage.length); 
 						$('#local-storage-bar').html(((localStorage.length/10240)*100).toFixed(2)+'%');
 						$('#result-localstorage').html (localStorage.length + 'k characters inserted to LocalStorage');		
+						
+						// Test localStorage capacity
 						function startTestLocalStorage () {
                             try {
 								for (var countIndex = 0; countIndex <= maxPackets; countIndex++) {
@@ -95,6 +120,22 @@ window.addEventListener('load', function () {
 							}
                         };
 						document.getElementById("local-start").addEventListener ("click", startTestLocalStorage, false);
+						
+						// Test sessionStorage capacity
+						function startTestSessionStorage () {
+                            try {
+								for (var countIndex = 0; countIndex <= maxPackets; countIndex++) {
+									sessionStorage.setItem( countIndex, packet );
+									$('#session-storage-bar').css('width', (countIndex/10240)*100+'%').attr('aria-valuenow', countIndex); 
+									$('#session-storage-bar').html(((countIndex/10240)*100).toFixed(2)+'%');
+									$('#result-sessionstorage').html (countIndex + 'k characters inserted to SessionStorage');
+								}				
+								
+							} catch ( e ) {
+								console.log(e.message);
+							}
+                        };
+						document.getElementById("session-start").addEventListener ("click", startTestSessionStorage, false);
 						
 						function clearStorage () {
                             localStorage.clear();
