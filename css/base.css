@@ -5,6 +5,7 @@ html {
 
 body {
 	font: 70%/1.3 Verdana, Helvetica, Arial, sans-serif;
+	background-color: transparent;
 }
 
 select, table {
