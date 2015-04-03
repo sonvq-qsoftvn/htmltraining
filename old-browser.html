@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="offline-language-english.css">
+        <link rel="stylesheet" href="offline-language-english-indicator.css">
+        <link rel="stylesheet" href="offline-theme-dark.css">
+        <link rel="stylesheet" href="offline-theme-dark-indicator.css">
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+    <body>
+        <div id="container">
+            <header role="banner">
+                <h1>Save data in Old Browser - Team 5 - Offline Storage</h1>
+                <h2>Save data to LocalStorage/UserData in IE7</h2>
+            </header>
+			<h4>Give team 5 your feedback about their presentation?</h4>
+			<div class="two-column">
+				<textarea id="feedback" style="width:450px;height:100px" style="behavior:url('#default#userData')"></textarea><br />
+			</div>
+            
+			<div class="spacer" style="clear: both;"></div>
+			<h2>Clear all data of OfflineStorage/UserData</h2>
+			
+			<div class="two-column">
+				<button type="button" name="clear" id="clear" onclick="clearStorage()">Clear OfflineStorage</button>
+			</div>		
+			
+            <div class="main" role="main">
+                <section id="main-content">
+                    <h3>Code used in this page</h3>
+                    <pre class="brush: js">
+<textarea id="feedback" style="behavior:url('#default#userData')"></textarea>
+
+init()
+function init() {
+	var feedbackarea = document.getElementById("feedback")
+	if (window.localStorage){
+		//if there is data stored for the target textarea
+		if (localStorage.feedbackdata){ 
+			//recall it upon refresh or crash
+			feedbackarea.value = localStorage.feedbackdata 
+		}
+		feedbackarea.onkeyup = function(e){
+			//save contents of textarea as user types
+			localStorage.feedbackdata = this.value 
+		}
+	}
+	else if (feedbackarea.addBehavior){
+		//load data if there is userData object "feedbackpersist"
+		feedbackarea.load("feedbackpersist") 
+		//if there is userData object founded inside attribute "feedbackattribute"
+		if (feedbackarea.getAttribute("feedbackattribute")){ 
+			//recall it upon refresh or crash
+			feedbackarea.value = feedbackarea.getAttribute("feedbackattribute") 
+		}
+		feedbackarea.onkeyup = function(e){
+			//save contents of textarea into attribute "feedbackattribute" as user types
+			feedbackarea.setAttribute("feedbackattribute", this.value) 
+			//save state of feedback textarea into userData object "feedbackpersist"
+			feedbackarea.save("feedbackpersist") 
+		}
+	}
+	
+	clearStorage = function () {
+		localStorage.clear();
+		feedbackarea.setAttribute("feedbackattribute", "");
+		feedbackarea.value = "";
+	};
+}
+                    </pre>
+                </section>
+            </div>
+			<script src="store.min.js"></script>
+            <script>
+				init()
+				function init() {
+					var feedbackarea = document.getElementById("feedback")
+					if (window.localStorage){
+						if (localStorage.feedbackdata){ //if there is data stored for the target textarea
+							feedbackarea.value = localStorage.feedbackdata //recall it upon refresh or crash
+						}
+						feedbackarea.onkeyup = function(e){
+							localStorage.feedbackdata = this.value //save contents of textarea as user types
+						}
+					}
+					else if (feedbackarea.addBehavior){
+						feedbackarea.load("feedbackpersist") //load data if there is userData object "feedbackpersist"
+						if (feedbackarea.getAttribute("feedbackattribute")){ //if there is userData object founded inside attribute "feedbackattribute"
+							feedbackarea.value = feedbackarea.getAttribute("feedbackattribute") //recall it upon refresh or crash
+						}
+						feedbackarea.onkeyup = function(e){
+							feedbackarea.setAttribute("feedbackattribute", this.value) //save contents of textarea into attribute "feedbackattribute" as user types
+							feedbackarea.save("feedbackpersist") //save state of feedback textarea into userData object "feedbackpersist"
+						}
+					}
+					
+					clearStorage = function () {
+						localStorage.clear();
+						feedbackarea.setAttribute("feedbackattribute", "");
+						feedbackarea.value = "";
+					};
+				}
+            </script>
+			
+			<!-- Syntax highlighting -->
+			<script type="text/javascript" src="syntax-highlighter/scripts/shHTMLJavaScript.js"></script>
+			<script type="text/javascript">
+				SyntaxHighlighter.all();
+			</script>
+        </div>
+    </body>
+</html>
