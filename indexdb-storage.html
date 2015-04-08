@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="offline-language-english.css">
+        <link rel="stylesheet" href="offline-language-english-indicator.css">
+        <link rel="stylesheet" href="offline-theme-dark.css">
+        <link rel="stylesheet" href="offline-theme-dark-indicator.css">
+        <link rel="stylesheet" href="css/base.css">
+    </head>
+    <body>
+        <div id="container">
+            <header role="banner">
+                <h1>Store data to indexedDB - Team 5 - Offline Storage</h1>
+                <h2>Insert, update, delete, search data in indexedDB</h2>
+            </header>
+
+			<div id="msg"></div>
+			
+			<div class="two-column">
+				<h4>Name</h4>
+				<input type="text" name="name-input" id="name-input" />
+			</div>
+            
+            <div class="two-column">
+				<h4>Email</h4>
+                <input type="text" name="email-input" id="email-input" />
+			</div>
+			
+			<div class="two-column">
+				<h4>Division</h4>
+                <select id="division-input">
+					<option value="sd1">SD1</option>
+					<option value="sd2">SD2</option>
+					<option value="sd3">SD3</option>
+				</select>
+			</div>
+			
+			<div class="two-column">
+				<h4>Avatar</h4>
+				<input type="file" id="files" name="files[]" multiple="">
+			</div>
+			
+			<div class="two-column">
+				<button type="button" name="add-button" id="add-button">Add Member to Division</button>
+			</div>
+			
+            <div class="spacer" style="clear: both;"></div>
+			<div id="divisioncount-msg"></div>
+			
+			<ul id="pub-list"></ul>
+			<h2>Clear all data of OfflineStorage</h2>
+			
+			<div class="two-column">
+				<button type="button" name="clear" id="clear">Clear OfflineStorage</button>
+			</div>		
+		
+            <div class="main" role="main">
+                <section id="main-content">
+                    <h3>Code used in this page</h3>
+                    <pre class="brush: js">
+window.addEventListener('load', function () {
+	// Check browser support
+	if (typeof(Storage) != "undefined") {     
+		// Retrieve
+		var userLocalObject = JSON.parse(localStorage.getItem("userLocalObject"));
+		var userSessionObject = JSON.parse(sessionStorage.getItem("userSessionObject"));
+		
+		if (typeof(localStorage.getItem("userLocalObject")) === "undefined" 
+			|| localStorage.getItem("userLocalObject") === null) {
+			userLocalObject = {name: "", gender: ""}
+		}
+
+		if (typeof(sessionStorage.getItem("userSessionObject")) === "undefined" 
+			|| sessionStorage.getItem("userSessionObject") === null) {
+			userSessionObject = {money: "", creditnumber: ""}
+		}
+		
+		document.getElementById("name").value = userLocalObject.name;
+		document.getElementById("gender").value = userLocalObject.gender;
+
+		document.getElementById("money").value = userSessionObject.money;
+		document.getElementById("creditnumber").value = userSessionObject.creditnumber;
+					
+
+		updateStorage = function(value, id) {
+			switch(id) {
+				case "name":
+					userLocalObject.name = value;
+					break;
+				case "gender":
+					console.log(userLocalObject);
+					userLocalObject.gender = value;
+					break;
+				case "money":
+					userSessionObject.money = value;
+					break;
+				case "creditnumber":
+					userSessionObject.creditnumber = value;
+					break;
+			}
+			
+			switch(id) {
+				case "name":
+				case "gender":
+					localStorage.setItem("userLocalObject", JSON.stringify(userLocalObject));
+					break;
+				case "money":
+				case "creditnumber":
+					sessionStorage.setItem("userSessionObject", JSON.stringify(userSessionObject));
+					break;
+			}
+			
+		};
+		
+		function clearStorage () {
+			localStorage.clear();
+			sessionStorage.clear();
+			var inputs, index;
+
+			inputs = document.getElementsByTagName('input');
+			for (index = 0; index < inputs.length; ++index) {
+				inputs[index].value="";
+			}
+		};
+		document.getElementById("clear").addEventListener ("click", clearStorage, false);
+	} else {
+		document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+	}
+}, false);
+                    </pre>
+                </section>
+            </div>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script>
+				(function () {
+					const DB_NAME = 'team5-indexeddb-qsoftdivision';
+					const DB_VERSION = 1;
+					const DB_STORE_NAME = 'softwaredivision';
+
+					var db;
+
+					function openDb() {
+						console.log("openDb ...");
+						var req = indexedDB.open(DB_NAME, DB_VERSION);
+						req.onsuccess = function (evt) {
+							db = this.result;
+							console.log("openDb DONE");
+						};
+						req.onerror = function (evt) {
+							console.error("openDb:", evt.target.errorCode);
+						};
+
+						req.onupgradeneeded = function (evt) {
+							console.log("openDb.onupgradeneeded");
+							var store = evt.currentTarget.result.createObjectStore(DB_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+
+							store.createIndex('name', 'name', { unique: false });
+							store.createIndex('email', 'email', { unique: true });
+							store.createIndex('division', 'division', { unique: false });
+						};
+					}
+
+					/**
+					 * @param {string} store_name
+					 * @param {string} mode either "readonly" or "readwrite"
+					 */
+					function getObjectStore(store_name, mode) {
+						var tx = db.transaction(store_name, mode);
+						return tx.objectStore(store_name);
+					}
+
+					function clearObjectStore(store_name) {
+						var store = getObjectStore(DB_STORE_NAME, 'readwrite');
+						var req = store.clear();
+						req.onsuccess = function(evt) {
+							displayActionSuccess("Store cleared");
+							displayDivisionList(store);
+						};
+						req.onerror = function (evt) {
+							console.error("clearObjectStore:", evt.target.errorCode);
+							displayActionFailure(this.error);
+						};
+					}
+
+
+					/**
+					 * @param {IDBObjectStore=} store
+					 */
+					function displayDivisionList(store) {
+						console.log("displayPubList");
+
+						if (typeof store == 'undefined')
+							store = getObjectStore(DB_STORE_NAME, 'readonly');
+
+						var divisioncount_msg = $('#divisioncount-msg');
+						divisioncount_msg.empty();
+						var req;
+						req = store.count();
+
+						req.onsuccess = function(evt) {
+							divisioncount_msg.append('<p>There are <strong>' + evt.target.result +
+								'</strong> record(s) in the object store.</p>');
+						};
+						req.onerror = function(evt) {
+							console.error("add error", this.error);
+							displayActionFailure(this.error);
+						};
+
+						var i = 0;
+						req = store.openCursor();
+						req.onsuccess = function(evt) {
+						  var cursor = evt.target.result;
+
+						  // If the cursor is pointing at something, ask for the data
+						  if (cursor) {
+							console.log("displayPubList cursor:", cursor);
+							req = store.get(cursor.key);
+							req.onsuccess = function (evt) {
+							  var value = evt.target.result;
+							  var list_item = $('<li>' +
+												'[' + cursor.key + '] ' +
+												'(biblioid: ' + value.biblioid + ') ' +
+												value.title +
+												'</li>');
+							  if (value.year != null)
+								list_item.append(' - ' + value.year);
+
+							  if (value.hasOwnProperty('blob') &&
+								  typeof value.blob != 'undefined') {
+								var link = $('<a href="' + cursor.key + '">File</a>');
+								link.on('click', function() { return false; });
+								link.on('mouseenter', function(evt) {
+										  setInViewer(evt.target.getAttribute('href')); });
+								list_item.append(' / ');
+								list_item.append(link);
+							  } else {
+								list_item.append(" / No attached file");
+							  }
+							  pub_list.append(list_item);
+							};
+
+							// Move on to the next object in store
+							cursor.continue();
+
+							// This counter serves only to create distinct ids
+							i++;
+						  } else {
+							console.log("No more entries");
+						  }
+						};
+					  }
+
+
+					/**
+					 * @param {string} name
+					 * @param {string} email
+					 * @param {number} division
+					 */
+					function addMember(name, email, division) {
+						console.log("addMember arguments:", arguments);
+						var obj = { name: name, email: email, division: division };
+
+						var store = getObjectStore(DB_STORE_NAME, 'readwrite');
+						var req;
+						try {
+							req = store.add(obj);
+						} catch (e) {
+							throw e;
+						}
+						req.onsuccess = function (evt) {
+							console.log("Insertion in DB successful");
+							displayActionSuccess();
+							displayDivisionList(store);
+						};
+						req.onerror = function() {
+							console.error("addMember error", this.error);
+							displayActionFailure(this.error);
+						};
+					}
+
+					/**
+					 * @param {string} biblioid
+					 */
+					function deleteMemberFromEmail(email) {
+						console.log("deleteMember:", arguments);
+						var store = getObjectStore(DB_STORE_NAME, 'readwrite');
+						var req = store.index(email);
+						req.get(email).onsuccess = function(evt) {
+							if (typeof evt.target.result == 'undefined') {
+								displayActionFailure("No matching record found");
+								return;
+							}
+							deleteMember(evt.target.result.id, store);
+						};
+						req.onerror = function (evt) {
+							console.error("deleteMemberFromEmail:", evt.target.errorCode);
+						};
+					}
+
+					/**
+					* @param {number} key
+					* @param {IDBObjectStore=} store
+					*/
+					function deleteMember(key, store) {
+						console.log("deleteMember:", arguments);
+
+						if (typeof store == 'undefined')
+							store = getObjectStore(DB_STORE_NAME, 'readwrite');
+
+						var req = store.get(key);
+						req.onsuccess = function(evt) {
+							var record = evt.target.result;
+							console.log("record:", record);
+							if (typeof record == 'undefined') {
+								displayActionFailure("No matching record found");
+								return;
+							}
+
+							req = store.delete(key);
+							req.onsuccess = function(evt) {
+								console.log("evt:", evt);
+								console.log("evt.target:", evt.target);
+								console.log("evt.target.result:", evt.target.result);
+								console.log("delete successful");
+								displayActionSuccess("Deletion successful");
+								displayMemberList(store);
+							};
+							req.onerror = function (evt) {
+								console.error("deletePublication:", evt.target.errorCode);
+							};
+						};
+						req.onerror = function (evt) {
+							console.error("deletePublication:", evt.target.errorCode);
+						};
+					}
+
+					function displayActionSuccess(msg) {
+						msg = typeof msg != 'undefined' ? "Success: " + msg : "Success";
+						$('#msg').html('<span class="action-success">' + msg + '</span>');
+					}
+					function displayActionFailure(msg) {
+						msg = typeof msg != 'undefined' ? "Failure: " + msg : "Failure";
+						$('#msg').html('<span class="action-failure">' + msg + '</span>');
+					}
+
+					function addEventListeners() {
+						console.log("addEventListeners");
+
+						$('#add-button').click(function(evt) {
+							console.log("add ...");
+							var name = $('#name-input').val();
+							var email = $('#email-input').val();
+							var division = $('#division-input').val();
+							if (!name || !email || !division) {
+								displayActionFailure("Required field(s) missing");
+								return;
+							}
+							addMember(name, email, division);
+						});
+
+						$('#delete-button').click(function(evt) {
+							console.log("delete ...");
+							var biblioid = $('#pub-biblioid-to-delete').val();
+							var key = $('#key-to-delete').val();
+
+							  if (biblioid != '') {
+								deletePublicationFromBib(biblioid);
+							  } else if (key != '') {
+								// Better use Number.isInteger if the engine has EcmaScript 6
+								if (key == '' || isNaN(key))  {
+								  displayActionFailure("Invalid key");
+								  return;
+								}
+								key = Number(key);
+								deletePublication(key);
+							  }
+						});
+
+						$('#clear-store-button').click(function(evt) {
+						  clearObjectStore();
+						});
+
+						var search_button = $('#search-list-button');
+						search_button.click(function(evt) {
+						  displayPubList();
+						});
+
+					}
+
+					openDb();
+					addEventListeners();
+				})();
+            </script>
+			
+			<!-- Syntax highlighting -->
+			<script type="text/javascript" src="syntax-highlighter/scripts/shHTMLJavaScript.js"></script>
+			<script type="text/javascript">
+				SyntaxHighlighter.all();
+			</script>
+        </div>
+    </body>
+</html>

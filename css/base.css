@@ -771,3 +771,23 @@ time {
 .syntaxhighlighter .color3 a { 
 	color: red !important; 
 }
+
+#msg {
+	margin-top: 25px;
+	margin-bottom: 5px;
+}
+.action-success {
+	font-weight: bold;
+	padding: 0.5em;
+	color: #00d21e;
+	background-color: #eeeeee;
+	border-radius: 0.2em;
+}
+
+.action-failure {
+	font-weight: bold;
+	padding: 0.5em;
+	color: #ff1408;
+	background-color: #eeeeee;
+	border-radius: 0.2em;
+}
